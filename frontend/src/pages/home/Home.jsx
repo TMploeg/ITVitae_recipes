@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_URL } from "../../App";
+import RecipeList from "../../components/recipe-list";
 import "./Home.css";
 
 export default function Home() {
@@ -17,15 +18,9 @@ export default function Home() {
             <input value={newRecipeName} onChange={event => setNewRecipeName(event.target.value)} />
             <button disabled={newRecipeName.length === 0} onClick={submitNewRecipe}>Add Recipe</button>
         </div>
-        <div>
-            {
-                recipes === null
-                    ? 'loading...'
-                    : recipes.length === 0
-                        ? 'no recipes found'
-                        : recipes.map((recipe, index) => <div key={index}>{recipe.title}</div>)
-            }
-        </div>
+        {
+            recipes === null ? 'loading...' : <RecipeList recipes={recipes} />
+        }
     </div>
 
     function submitNewRecipe() {
