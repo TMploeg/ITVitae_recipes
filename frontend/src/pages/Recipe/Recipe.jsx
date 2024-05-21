@@ -25,17 +25,15 @@ export default function Recipe() {
         {
             recipeIngredients == null
                 ? 'loading...'
-                : <ItemList items={recipeIngredients} displayItemFn={item => item.name} />
+                : <ItemList items={recipeIngredients} displayItemFn={item => <>{item.quantity}{item.unit} {item.name}</>} />
         }
     </div>
 
     function loadRecipeIngredients() {
         axios.get(API_RECIPE_URL)
             .then(response => {
-                setRecipe(response.data);
-                axios.get(API_RECIPE_INGREDIENTS_URL)
-                    .then(response => setRecipeIngredients(response.data))
-                    .catch(error => console.error(error.response.data));
+                setRecipe({ id: response.data.id, title: response.data.title });
+                setRecipeIngredients(response.data.ingredients);
             })
             .catch(_ => navigate('/'));
     }

@@ -1,9 +1,12 @@
 package com.tmploeg.recipes.controllers;
 
 import com.tmploeg.recipes.dtos.RecipeDTO;
+import com.tmploeg.recipes.dtos.RecipeInfoDTO;
 import com.tmploeg.recipes.models.Recipe;
+import com.tmploeg.recipes.repositories.RecipeIngredientRepository;
 import com.tmploeg.recipes.repositories.RecipeRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin("${app.cors}")
 public class RecipeController {
   private final RecipeRepository recipeRepository;
+  private final RecipeIngredientRepository recipeIngredientRepository;
 
   @GetMapping
   public List<RecipeDTO> getAll() {
@@ -21,10 +25,14 @@ public class RecipeController {
   }
 
   @GetMapping("{id}")
-  public ResponseEntity<RecipeDTO> getById(@PathVariable Long id) {
-    return recipeRepository
-        .findById(id)
-        .map(r -> ResponseEntity.ok(RecipeDTO.from(r)))
+  public ResponseEntity<RecipeInfoDTO> getById(@PathVariable Long id) {
+    Optional<Recipe> maybeRecipe = recipeRepository.findById(id);
+    return maybeRecipe
+        .map(
+            recipe ->
+                ResponseEntity.ok(
+                    RecipeInfoDTO.from(
+                        recipe, recipeIngredientRepository.findByRecipe_id(recipe.getId()))))
         .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
