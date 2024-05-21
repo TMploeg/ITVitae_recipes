@@ -1,11 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../App";
 import ItemList from "../../components/item-list";
 import TextInput from "../../components/text-input";
 
 export default function Home() {
     const [recipes, setRecipes] = useState(null);
+    const navigate = useNavigate();
 
     const API_RECIPES_URL = API_URL + 'recipes';
 
@@ -15,7 +17,7 @@ export default function Home() {
         <h1 className="page-title">Recipes</h1>
         <TextInput onSubmit={submitNewRecipe} />
         {
-            recipes === null ? 'loading...' : <ItemList items={recipes} displayItemFn={item => item.title} />
+            recipes === null ? 'loading...' : <ItemList items={recipes} displayItemFn={item => item.title} onItemClicked={item => navigate('/recipe/' + item.id)} />
         }
     </div>
 

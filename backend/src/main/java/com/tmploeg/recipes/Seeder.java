@@ -9,7 +9,6 @@ import com.tmploeg.recipes.repositories.RecipeRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -61,33 +60,26 @@ public class Seeder implements CommandLineRunner {
   }
 
   private void seedRecipeIngredients() {
-    Map<Long, Long[]> recipeIngredientList =
+    Map<Integer, int[]> recipeIngredientList =
         Map.of(
-            1L,
-            new Long[] {1L, 2L},
-            2L,
-            new Long[] {3L, 4L},
-            3L,
-            new Long[] {2L, 5L},
-            4L,
-            new Long[] {1L, 5L},
-            5L,
-            new Long[] {1L, 3L});
+            0,
+            new int[] {0, 1},
+            1,
+            new int[] {2, 3},
+            2,
+            new int[] {1, 4},
+            3,
+            new int[] {0, 4},
+            4,
+            new int[] {0, 2});
 
-    for (Long recipeId : recipeIngredientList.keySet()) {
-      Optional<Recipe> maybeRecipe = recipeRepository.findById(recipeId);
-      if (maybeRecipe.isEmpty()) {
-        continue;
-      }
+    for (int recipeIndex : recipeIngredientList.keySet()) {
+      Recipe recipe = recipeRepository.findAll().get(recipeIndex);
 
-      for (Long ingredientId : recipeIngredientList.get(recipeId)) {
-        Optional<Ingredient> maybeIngredient = ingredientRepository.findById(ingredientId);
-        if (maybeIngredient.isEmpty()) {
-          continue;
-        }
+      for (int ingredientIndex : recipeIngredientList.get(recipeIndex)) {
+        Ingredient ingredient = ingredientRepository.findAll().get(ingredientIndex);
 
-        recipeIngredientRepository.save(
-            new RecipeIngredient(maybeRecipe.get(), maybeIngredient.get(), 1, "L"));
+        recipeIngredientRepository.save(new RecipeIngredient(recipe, ingredient, 1, "L"));
       }
     }
   }

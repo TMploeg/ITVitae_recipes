@@ -2,7 +2,6 @@ package com.tmploeg.recipes.controllers;
 
 import com.tmploeg.recipes.dtos.AddIngredientDTO;
 import com.tmploeg.recipes.dtos.IngredientDTO;
-import com.tmploeg.recipes.dtos.RecipeIngredientDTO;
 import com.tmploeg.recipes.models.Ingredient;
 import com.tmploeg.recipes.models.Recipe;
 import com.tmploeg.recipes.models.RecipeIngredient;
@@ -36,11 +35,11 @@ public class RecipeIngredientController {
   }
 
   @GetMapping("{ingredientId}")
-  public ResponseEntity<RecipeIngredientDTO> getById(
+  public ResponseEntity<IngredientDTO> getById(
       @PathVariable Long recipeId, @PathVariable Long ingredientId) {
     return recipeIngredientRepository
         .findById(new RecipeIngredientKey(recipeId, ingredientId))
-        .map(rI -> ResponseEntity.ok(RecipeIngredientDTO.from(rI)))
+        .map(rI -> ResponseEntity.ok(IngredientDTO.from(rI.getIngredient())))
         .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
