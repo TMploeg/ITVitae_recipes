@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../App";
 import ItemList from "../../components/item-list";
-import TextInput from "../../components/text-input";
+import "./Home.css";
 
 export default function Home() {
     const [recipes, setRecipes] = useState(null);
@@ -15,10 +15,10 @@ export default function Home() {
 
     return <div className="page-container">
         <h1 className="page-title">Recipes</h1>
-        <TextInput onSubmit={submitNewRecipe} />
         {
             recipes === null ? 'loading...' : <ItemList items={recipes} displayItemFn={item => item.title} onItemClicked={item => navigate('/recipe/' + item.id)} />
         }
+        <button className="add-recipe-button" onClick={() => navigate('/add-recipe')}>Add Recipe</button>
     </div>
 
     function submitNewRecipe(newRecipe) {

@@ -1,0 +1,7 @@
+.clickable-list-item{
+    cursor: pointer;
+    width: fit-content;
+}
+.clickable-list-item:hover{
+    text-decoration: underline;
+}
