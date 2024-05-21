@@ -3,8 +3,7 @@ package com.tmploeg.recipes.controllers;
 import com.tmploeg.recipes.dtos.RecipeDTO;
 import com.tmploeg.recipes.models.Recipe;
 import com.tmploeg.recipes.repositories.RecipeRepository;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +15,8 @@ public class RecipeController {
   private final RecipeRepository recipeRepository;
 
   @GetMapping
-  public Set<RecipeDTO> getAll() {
-    return recipeRepository.findAll().stream().map(RecipeDTO::from).collect(Collectors.toSet());
+  public List<RecipeDTO> getAll() {
+    return recipeRepository.findAll().stream().map(RecipeDTO::from).toList();
   }
 
   @GetMapping("{id}")
