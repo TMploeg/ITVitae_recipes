@@ -3,7 +3,8 @@ package com.tmploeg.recipes.controllers;
 import com.tmploeg.recipes.dtos.RecipeDTO;
 import com.tmploeg.recipes.models.Recipe;
 import com.tmploeg.recipes.repositories.RecipeRepository;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,15 +16,15 @@ public class RecipeController {
   private final RecipeRepository recipeRepository;
 
   @GetMapping
-  public List<Recipe> getAll() {
-    return recipeRepository.findAll();
+  public Set<RecipeDTO> getAll() {
+    return recipeRepository.findAll().stream().map(RecipeDTO::from).collect(Collectors.toSet());
   }
 
   @GetMapping("{id}")
-  public ResponseEntity<Recipe> getById(@PathVariable Long id) {
+  public ResponseEntity<RecipeDTO> getById(@PathVariable Long id) {
     return recipeRepository
         .findById(id)
-        .map(ResponseEntity::ok)
+        .map(r -> ResponseEntity.ok(RecipeDTO.from(r)))
         .orElseGet(() -> ResponseEntity.notFound().build());
   }
 
