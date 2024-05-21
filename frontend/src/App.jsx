@@ -1,8 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import Recipe from './pages/Recipe/Recipe';
 import Home from './pages/home';
 import Ingredients from './pages/ingredients';
+import Recipe from './pages/recipe';
 
 function App() {
   return (
