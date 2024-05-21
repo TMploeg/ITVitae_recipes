@@ -1,11 +1,15 @@
-import './App.css'
+import { Route, Routes } from 'react-router-dom';
+import './App.css';
+import Home from './pages/home/Home';
 
 function App() {
   return (
-    <div>
-      Hello World
-    </div>
+    <Routes>
+      <Route path="/" element={<Home />} />
+    </Routes>
   )
 }
 
 export default App
+
+export const API_URL = 'http://localhost:8080/api/v1/';

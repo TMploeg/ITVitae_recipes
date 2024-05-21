@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/recipes")
+@CrossOrigin("${app.cors}")
 public class RecipeController {
   private final RecipeRepository recipeRepository;
 
