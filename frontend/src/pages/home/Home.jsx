@@ -1,12 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_URL } from "../../App";
+import NewRecipeInput from "../../components/new-recipe-input/NewRecipeInput";
 import RecipeList from "../../components/recipe-list";
 import "./Home.css";
 
 export default function Home() {
     const [recipes, setRecipes] = useState(null);
-    const [newRecipeName, setNewRecipeName] = useState('');
 
     const API_RECIPES_URL = API_URL + 'recipes';
 
@@ -14,20 +14,16 @@ export default function Home() {
 
     return <div className="homepage-container">
         <h1 className="homepage-title">Recipes</h1>
-        <div className="homepage-menu">
-            <input value={newRecipeName} onChange={event => setNewRecipeName(event.target.value)} />
-            <button disabled={newRecipeName.length === 0} onClick={submitNewRecipe}>Add Recipe</button>
-        </div>
+        <NewRecipeInput onSubmit={submitNewRecipe} />
         {
             recipes === null ? 'loading...' : <RecipeList recipes={recipes} />
         }
     </div>
 
-    function submitNewRecipe() {
-        axios.post(API_RECIPES_URL, { title: newRecipeName })
+    function submitNewRecipe(newRecipe) {
+        axios.post(API_RECIPES_URL, { title: newRecipe })
             .then(_ => loadRecipes())
-            .catch(console.error)
-            .finally(() => setNewRecipeName(''));
+            .catch(console.error);
     }
 
     function loadRecipes() {
