@@ -5,4 +5,6 @@ public abstract class ControllerRoutes {
 
   public static final String RECIPE_ROUTE = DEFAULT_ROUTE + "/recipes";
   public static final String INGREDIENT_ROUTE = DEFAULT_ROUTE + "/ingredients";
+  public static final String RECIPE_INGREDIENT_ROUTE =
+      DEFAULT_ROUTE + "/recipes/{recipeId}/ingredients";
 }

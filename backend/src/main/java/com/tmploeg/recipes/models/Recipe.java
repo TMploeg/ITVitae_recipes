@@ -1,9 +1,7 @@
 package com.tmploeg.recipes.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +14,9 @@ public class Recipe {
   private Long id;
 
   private String title;
+
+  @OneToMany(mappedBy = "recipe")
+  private Set<RecipeIngredient> recipeIngredients;
 
   public Recipe(String title) {
     this.title = title;
