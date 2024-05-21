@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_URL } from "../../App";
+import "./Home.css";
 
 export default function Home() {
     const [recipes, setRecipes] = useState(null);
@@ -14,8 +15,8 @@ export default function Home() {
             });
     }, []);
 
-    return <div>
-        <h1>Recipes</h1>
+    return <div className="homepage-container">
+        <h1 className="homepage-title">Recipes</h1>
         <div>
             {
                 recipes === null
