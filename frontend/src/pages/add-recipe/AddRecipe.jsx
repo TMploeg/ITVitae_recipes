@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../App";
 import "./AddRecipe.css";
@@ -7,13 +7,16 @@ import "./AddRecipe.css";
 export default function AddRecipe() {
     const [newRecipeName, setNewRecipeName] = useState('');
 
-    const [newIngredientName, setNewIngredientName] = useState('');
+    const [newIngredient, setNewIngredient] = useState('');
     const [newIngredientQuantity, setNewIngredientQuantity] = useState(0);
     const [newIngredientUnit, setNewIngredientUnit] = useState('');
 
-    const [ingredients, setIngredients] = useState([]);
+    const [recipeIngredients, setRecipeIngredients] = useState([]);
+    const [ingredients, setIngredients] = useState(null);
 
     const navigate = useNavigate();
+
+    useEffect(loadIngredients, []);
 
     const API_RECIPES_URL = API_URL + 'recipes';
     const API_INGREDIENTS_URL = API_URL + 'ingredients';
@@ -26,7 +29,9 @@ export default function AddRecipe() {
         <div className="add-recipe-ingredient-form">
             <h2 className="page-subtitle">Add Ingredient</h2>
             <label>
-                name <input value={newIngredientName} onChange={event => setNewIngredientName(event.target.value)} />
+                name <select onChange={event => setNewIngredient(ingredients[event.target.selectedIndex])}>
+                    {(ingredients ?? []).map(i => <option key={i.id}>{i.name}</option>)}
+                </select>
             </label>
             <label>
                 quantity <input value={newIngredientQuantity} onChange={event => setNewIngredientQuantity(event.target.value)} />
@@ -39,23 +44,36 @@ export default function AddRecipe() {
         <div>
             <h2 className="list-subtitle">Ingredients</h2>
             <div>
-                {ingredients.map(i => <div>{i.quantity}{i.unit} {i.name}</div>)}
+                {recipeIngredients.map((ingredient, index) => <div key={index}>
+                    {ingredient.quantity}{ingredient.unit} {ingredient.value.name}
+                </div>)}
             </div>
         </div>
         <button disabled={newRecipeName.length === 0} onClick={submit}>Add Recipe</button>
     </div>
 
+    function loadIngredients() {
+        axios.get(API_INGREDIENTS_URL)
+            .then(getIngredientsResponse => {
+                setIngredients(getIngredientsResponse.data);
+                if (getIngredientsResponse.data.length > 0) {
+                    setNewIngredient(getIngredientsResponse.data[0])
+                }
+            })
+            .catch(_ => navigate('/'));
+    }
+
     function addIngredient() {
-        setIngredients(ingredients => [
+        setRecipeIngredients(ingredients => [
             ...ingredients,
             {
-                name: newIngredientName,
+                value: newIngredient,
                 quantity: newIngredientQuantity,
                 unit: newIngredientUnit
             }
         ]);
 
-        setNewIngredientName('');
+        setNewIngredient('');
         setNewIngredientQuantity(0);
         setNewIngredientUnit('');
     }
@@ -65,40 +83,25 @@ export default function AddRecipe() {
             .then(addRecipeResponse => {
                 const newRecipe = addRecipeResponse.data;
                 const recipeIngredientsURL = API_RECIPES_URL + `/${newRecipe.id}/ingredients`;
+                const recipeIngredientPromises = [];
 
-                axios.get(API_INGREDIENTS_URL)
-                    .then(getIngredientsResponse => {
-                        const recipeIngredientPromises = [];
+                for (let ingredient of recipeIngredients) {
 
-                        for (let ingredient of ingredients) {
-                            const foundIngredient = getIngredientsResponse.data.find(item => item.name === ingredient.name);
-                            if (foundIngredient === undefined) {
-                                return Promise.reject({
-                                    response: {
-                                        data: "ingredient does not exist"
-                                    }
-                                });
-                            }
+                    console.log(ingredient);
+                    recipeIngredientPromises.push(axios.post(
+                        recipeIngredientsURL,
+                        {
+                            ingredientId: ingredient.value.id,
+                            quantity: ingredient.quantity,
+                            unit: ingredient.unit
+                        })
+                        .catch(error => {
+                            console.error(error.response.data);
+                            alert('unknown error occurred');
+                        }));
+                }
 
-                            recipeIngredientPromises.push(axios.post(
-                                recipeIngredientsURL,
-                                {
-                                    ingredientId: foundIngredient.id,
-                                    quantity: ingredient.quantity,
-                                    unit: ingredient.unit
-                                })
-                                .catch(error => {
-                                    console.error(error.response.data);
-                                    alert('unknown error occurred');
-                                }));
-                        }
-
-                        Promise.all(recipeIngredientPromises).then(_ => navigate('/recipe/' + newRecipe.id));
-                    })
-                    .catch(error => {
-                        console.log(error);
-                        alert(error.response.data)
-                    });
+                Promise.all(recipeIngredientPromises).then(_ => navigate('/recipe/' + newRecipe.id));
             })
             .catch(error => alert(error.response.data));
     }
